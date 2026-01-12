@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seal Your Message</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="ocean-bg"> <header>
+        <h1 class="antique-title">Cast a New Bottle</h1>
+        <p class="antique-subtitle">Your words will drift until someone finds them on the shore.</p>
+    </header>
+
+    <div class="parchment-container">
+        <form id="messageForm" enctype="multipart/form-data">
+            
+            <div class="input-group">
+                <label class="ink-label">From:</label>
+                <input type="text" id="recipient" class="ink-input" placeholder="A mysterious traveler..." required>
+            </div>
+
+            <div class="input-group">
+                <label class="ink-label">Title of the Message:</label>
+                <input type="text" id="title" class="ink-input" placeholder="Give your bottle a name" required>
+            </div>
+
+            <div class="input-group">
+                <label class="ink-label">The Message:</label>
+                <textarea id="msgInput" class="ink-textarea" placeholder="Write your heart out onto this scroll..." required></textarea>
+            </div>
+
+            <div class="input-group">
+                <label class="ink-label">Place a Memory (Image):</label>
+                <input type="file" id="imageInput" class="ink-file" accept="image/*">
+            </div>
+
+            <div class="button-group">
+                <a href="index.html?mode=ocean" class="btn-secondary">Discard</a>
+                <button type="submit" class="btn-primary-ink">Seal & Cast Away</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('messageForm').onsubmit = function(e) {
+            e.preventDefault();
+            
+            // Get the zone from localStorage (we saved it in enterOcean)
+            const currentZone = localStorage.getItem('currentZone') || '1';
+
+            const formData = new FormData();
+            formData.append('recipient', document.getElementById('recipient').value);
+            formData.append('title', document.getElementById('title').value);
+            formData.append('message', document.getElementById('msgInput').value);
+            formData.append('zone', currentZone); // ATTACH THE ZONE
+            
+            const fileInput = document.getElementById('imageInput');
+            if (fileInput.files.length > 0) {
+                formData.append('image', fileInput.files[0]);
+            }
+
+            fetch('process.php', {
+                method: 'POST',
+                body: formData
+            }).then(() => {
+                // Clear the cache for THIS zone so the new bottle appears
+                sessionStorage.removeItem(`bottlePositions_zone_${currentZone}`);
+                window.location.href = 'index.html?mode=ocean';
+            });
+        };
+    </script>
+</body>
+</html>

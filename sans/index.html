@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Drift Bottle World</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <script>
+        if (window.location.search.includes('mode=ocean')) {
+            document.documentElement.style.background = '#89f7fe'; // Prevent white flash
+        }
+    </script>
+
+    <div id="mapLayer">
+        <header style="position: absolute; top: 20px; width: 100%; z-index: 10;">
+            <h1 style = "margin-top: 5%;">Select Your Voyage</h1>
+            <p>Choose a sector (I - IX) to cast your bottle</p>
+        </header>
+
+        <div class="map-container">
+            <img src="assets/ship.png" id="playerShip" class="ship-icon" alt="Ship">
+            </div>
+    </div>
+
+    <div id="oceanLayer" style="display: none; opacity: 0;">
+        <header>
+            <h1 style="margin-top: 0px;">Drift Bottle Ocean</h1>
+            <p>Click a bottle to read a message, or cast your own.</p>
+            <p id="oceanSubtitle">Floating thoughts from this region...</p>
+            <button id="addBtn" class="fab">Add your own drifting bottle</button>
+            <button onclick="backToMap()" class="btn-secondary" style="margin-top:10px;">Return to Map</button>
+        </header>
+
+        <div class="grid-container" id="bottleGrid"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

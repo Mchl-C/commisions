@@ -1,0 +1,371 @@
+/* --- EXISTING FONTS --- */
+@font-face { font-family: 'SourceSerif'; src: url('fonts/source-serif-pro.bold.otf'); font-weight: bold; }
+@font-face { font-family: 'Italianno'; src: url('fonts/Italianno-Regular.ttf'); font-weight: normal; }
+@font-face { font-family: 'Nunito'; src: url('fonts/Nunito-Light.ttf'); font-weight: 300; }
+
+body {
+    background: #2b3e50; /* Dark background behind the map */
+    font-family: 'Nunito', sans-serif;
+    color: #fff;
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* --- MAP LAYER STYLES --- */
+#mapLayer {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom, #89f7fe, #66a6ff); 
+    transition: opacity 1s ease;
+    background-image: url('assets/map.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    z-index: 99;
+}
+
+.map-container {
+    position: relative;
+    width: 100%;       /* Fill the screen width */
+    height: 80vh;      /* Use 80% of the viewport height */
+    max-width: 1200px; /* Optional: cap the size on big monitors */
+    margin: 0 auto;
+    overflow: hidden;  /* Prevents spots from creating scrollbars if they glitch */
+    background-size: cover;
+    background-position: center;
+}
+
+/* The Ink Numbers (I, II, III...) */
+.map-spot {
+    z-index: 999 !important;
+    position: absolute;
+    font-family: 'SourceSerif', cursive;
+    /* This makes font scale between 2rem on phones and 4rem on desktop */
+    font-size: clamp(1rem, 8vw, 3rem); 
+    color: #5c4033;
+    cursor: pointer;
+    /* Adjust container size so the hit-box isn't too huge on mobile */
+    width: clamp(40px, 10vw, 60px); 
+    height: clamp(40px, 10vw, 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    outline: none;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* This triggers the moment the user clicks and stays active 
+   until they click something else or the page changes */
+.map-spot:focus {
+    transform: scale(1.5);
+    filter: brightness(1.5) drop-shadow(0 0 10px white);
+    z-index: 100;
+}
+
+/* Optional: Subtle hover so user knows it's clickable */
+.map-spot:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+
+/* The Ship */
+.ship-icon {
+    position: absolute;
+    /* On phones, 30% width is often too big; 15vw-20vw is safer */
+    width: clamp(60px, 20vw, 120px); 
+    height: auto;
+    transition: top 2s ease-in-out, left 2s ease-in-out, transform 2s ease-in-out;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* --- OCEAN LAYER STYLES (Your existing styles adapted) --- */
+#oceanLayer {
+    /* Path to your asset */
+    background-image: url('assets/sea.png');
+    background-size: cover; 
+    background-repeat: no-repeat; 
+    background-position: center center;
+
+    min-height: 100vh;
+    width: 100%;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity 1s ease;
+}
+/* --- RESPONSIVE HEADER TEXT --- */
+header h1 {
+    font-family: 'SourceSerif', serif;
+    /* Scales between 1.8rem on mobile and 3rem on desktop */
+    font-size: clamp(1.8rem, 8vw, 3rem); 
+    margin-bottom: 5px;
+    color: #000000;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    text-align: center;
+    pointer-events: none; 
+    user-select: none;
+    /* Overrides the 5% inline style on mobile to save space */
+    margin-top: 20px !important; 
+}
+
+header p {
+    font-family: 'SourceSerif', serif;
+    /* Scales between 0.9rem on mobile and 1.1rem on desktop */
+    font-size: clamp(0.9rem, 4vw, 1.1rem);
+    margin-bottom: 5px;
+    color: #000000;
+    text-align: center;
+    pointer-events: none; 
+    user-select: none;
+    padding: 0 15px; /* Prevents text from hitting the screen edges */
+}
+
+
+/* Your Existing Grid & Bottle Styles */
+.grid-container {
+    position: relative;
+    width: 100%;
+    /* Change min-height to use the full viewport height */
+    min-height: 100vh; 
+    margin: 0 auto;
+    background: transparent;
+    /* Prevents unwanted scrolling if a bottle spawns slightly off-edge */
+    overflow: hidden; 
+}
+
+.bottle {
+    position: absolute;
+    width: 25%;
+    cursor: pointer;
+    animation: float 4s ease-in-out infinite;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Define the bobbing movement */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.bottle-img {
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, rgba(0,0,0,0.4) 100%);
+    mask-image: linear-gradient(to bottom, black 50%, rgba(0,0,0,0.1) 100%);
+    animation: float 3s ease-in-out infinite;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.bottle:nth-child(even) { animation-duration: 5s; animation-delay: 1s; }
+.bottle:hover .bottle-img { transform: scale(1.1) rotate(-5deg); }
+
+.fab {
+    position: fixed;
+    bottom: 50px;
+    right: 50px; /* Moved to right for better UX */
+    font-family: "Nunito", sans-serif;
+    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 50px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+.fab:hover { background: rgba(255, 255, 255, 0.4); transform: translateY(-5px); }
+
+/* Secondary Button - Updated for light ocean background */
+.btn-secondary {
+    background: rgba(0, 0, 0, 0.1); /* Very subtle dark overlay */
+    color: #1c5a85; /* Deep ocean blue/dark color */
+    border: 1px solid #1c5a85; /* Matching dark border */
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.3s ease;
+    display: block;    /* Required for margin: auto to work */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-secondary:hover {
+    background: #1c5a85; /* Invert colors on hover */
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+#oceanTitle {
+    font-family: 'SourceSerif', serif;
+    font-size: 3.5rem;
+    color: #000000;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+#oceanSubtitle {
+    font-family: 'Italianno', cursive;
+    font-size: 1.8rem;
+    color: #1c5a85;
+    margin-top: -10px;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 720px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .bottle-img {
+        width: 60px !important;
+        height: auto;
+    }
+
+    header h1 {
+        font-size: 1rem !important; 
+        margin-top: 50px !important;
+        padding-top: 10px !important;
+    }
+
+    header p {
+        font-size: 0.7rem !important;
+        padding: 0 10px;
+    }
+}
+
+@media (min-width: 768px) {
+    header h1 {
+        margin-top: 5% !important; /* Restore your original spacing for larger screens */
+    }
+}
+
+/* --- COMPOSE PAGE THEME (Polished Spacing) --- */
+
+.ocean-bg {
+    background-image: url('assets/sea.png');
+    background-size: cover;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px; /* Increased top padding */
+    min-height: 100vh;
+}
+
+/* The Paper Scroll Container */
+.parchment-container {
+    background: #f4e4bc; 
+    border: 2px solid #d4c5b0;
+    border-radius: 8px;
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.2),
+        inset 0 0 60px rgba(139, 69, 19, 0.15);
+    padding: 50px; /* Generous padding for the "Scroll" feel */
+    width: 90%;
+    max-width: 650px;
+    margin: 20px auto;
+}
+
+/* Spacing out the rows */
+.input-group {
+    margin-bottom: 30px; /* More breathing room between inputs */
+    text-align: left;
+}
+
+.ink-label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+    color: #5c4033;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Handwritten Style Inputs */
+.ink-input, .ink-textarea {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(92, 64, 51, 0.3) !important;
+    border-radius: 0 !important;
+    font-family: 'Italianno', cursive !important;
+    font-size: 2rem !important; /* Larger for better readability */
+    color: #2b1e16 !important;
+    padding: 5px 0 !important;
+    width: 100%;
+}
+
+/* Specific fix for the file input alignment */
+.ink-file {
+    margin-top: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: #5c4033;
+}
+
+/* --- BUTTON GROUP FIX --- */
+/* This makes the Discard and Seal buttons sit nicely side-by-side */
+.button-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align to the left like your preview */
+    gap: 20px; 
+    margin-top: 40px;
+}
+
+/* Discard Button - Resetting from the global .btn-secondary */
+.button-group .btn-secondary {
+    display: inline-block; /* Allow it to sit next to the other button */
+    margin: 0;             /* Remove the auto-margins from your previous code */
+    padding: 12px 25px;
+    background: rgba(0, 0, 0, 0.05);
+    color: #1c5a85;
+    border: 1px solid #1c5a85;
+    border-radius: 50px; /* Match the pill shape of the Seal button */
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* Wax Seal Button */
+.btn-primary-ink {
+    background: #8b0000; 
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(139, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary-ink:hover {
+    background: #a30000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(139, 0, 0, 0.4);
+}
